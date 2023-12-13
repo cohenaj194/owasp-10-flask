@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 from flask import g
+import random
 
 DATABASE = 'database.db'
 
@@ -16,13 +17,14 @@ def init_db():
         cursor.execute('''CREATE TABLE IF NOT EXISTS books
                           (id INTEGER PRIMARY KEY, title TEXT, author TEXT)''')
 
+        random_integer = random.randint(1, 10000)
         # Insert sample data
         cursor.execute("INSERT INTO books (title, author) VALUES (?, ?)",
-                       ('Book One', 'Author A'))
+                       (f'Book One {random_integer}', f'Author A {random_integer}'))
         cursor.execute("INSERT INTO books (title, author) VALUES (?, ?)",
-                       ('Book Two', 'Author B'))
+                       (f'Book Two {random_integer}', f'Author B {random_integer}'))
         cursor.execute("INSERT INTO books (title, author) VALUES (?, ?)",
-                       ('Book Three', 'Author C'))
+                       (f'Book Three {random_integer}', f'Author C {random_integer}'))
 
         db.commit()
 
