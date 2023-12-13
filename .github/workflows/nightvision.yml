@@ -10,6 +10,7 @@ env:
   NIGHTVISION_APP: owasp10
   NIGHTVISION_AUTH: owasp10
   APP: owasp10
+  PROJECT: testing
   
 jobs:
   test:
@@ -27,6 +28,7 @@ jobs:
 
       - name: (3) Extract API documentation from code
         run: |
+          nightvision project set ${PROJECT}
           # for 0.4.0
           nightvision swagger extract ./ --lang python -t ${APP} || true
           if [ ! -e openapi-spec.yml ]; then
@@ -45,6 +47,7 @@ jobs:
 
       - name: (5) Scan the API
         run: |
+          nightvision project set ${PROJECT}
           nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} --auth ${NIGHTVISION_AUTH} > scan-results.txt
           nightvision export sarif -s "$(head -n 1 scan-results.txt)" --swagger-file openapi-spec.yml
 
