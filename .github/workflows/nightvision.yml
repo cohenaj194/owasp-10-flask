@@ -8,6 +8,7 @@ env:
   NIGHTVISION_TOKEN: ${{ secrets.NIGHTVISION_TOKEN }}
   NIGHTVISION_TARGET: owasp10
   NIGHTVISION_APP: owasp10
+  NIGHTVISION_AUTH: owasp10
   APP: owasp10
   
 jobs:
@@ -44,8 +45,7 @@ jobs:
 
       - name: (5) Scan the API
         run: |
-          # nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} --auth ${NIGHTVISION_AUTH} > scan-results.txt
-          nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} > scan-results.txt
+          nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} --auth ${NIGHTVISION_AUTH} > scan-results.txt
           nightvision export sarif -s "$(head -n 1 scan-results.txt)" --swagger-file openapi-spec.yml
 
 
