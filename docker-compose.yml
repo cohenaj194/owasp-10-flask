@@ -1,0 +1,14 @@
+---
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: "."
+    ports:
+      - "5000:5000"
+    environment:
+      - DEBUG_MODE=True
+    volumes:
+      - ".:/app"
+    init: true

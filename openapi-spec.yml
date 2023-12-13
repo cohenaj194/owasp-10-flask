@@ -1,0 +1,113 @@
+components: {}
+info:
+  title: owasp10
+  version: "0.1"
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: root_GET
+      responses:
+        default:
+          description: Default response
+      x-name: root_GET
+      x-source: p.py~~31
+    post:
+      operationId: root_POST
+      responses:
+        default:
+          description: Default response
+      x-name: root_POST
+      x-source: p.py~~31
+    x-name: root
+  /login:
+    get:
+      operationId: login_GET
+      parameters:
+      - in: query
+        name: password
+        schema:
+          type: string
+          default: "admin"
+          x-field-kind: normal
+          x-field-original-type: ""
+          x-field-type: string
+        x-category: query parameter
+      - in: query
+        name: username
+        schema:
+          type: string
+          default: "admin"
+          x-field-kind: normal
+          x-field-original-type: ""
+          x-field-type: string
+        x-category: query parameter
+      responses:
+        default:
+          description: Default response
+      x-name: login_GET
+      x-source: p.py~~38
+    post:
+      operationId: login_POST
+      parameters:
+      - in: query
+        name: password
+        schema:
+          type: string
+          default: "admin"
+          x-field-kind: normal
+          x-field-original-type: ""
+          x-field-type: string
+        x-category: query parameter
+      - in: query
+        name: username
+        schema:
+          type: string
+          default: "admin"
+          x-field-kind: normal
+          x-field-original-type: ""
+          x-field-type: string
+        x-category: query parameter
+      responses:
+        default:
+          description: Default response
+      x-name: login_POST
+      x-source: p.py~~38
+    x-name: login
+  /search:
+    get:
+      operationId: search_GET
+      parameters:
+      - in: query
+        name: query
+        schema:
+          type: string
+          x-field-kind: normal
+          x-field-original-type: ""
+          x-field-type: string
+        x-category: query parameter
+      responses:
+        default:
+          description: Default response
+      x-name: search_GET
+      x-source: p.py~~66
+    post:
+      operationId: search_POST
+      parameters:
+      - in: query
+        name: query
+        schema:
+          type: string
+          x-field-kind: normal
+          x-field-original-type: ""
+          x-field-type: string
+        x-category: query parameter
+      responses:
+        default:
+          description: Default response
+      x-name: search_POST
+      x-source: p.py~~66
+    x-name: search
+servers:
+- description: Default server
+  url: https://127.0.0.1:5000
