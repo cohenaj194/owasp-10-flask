@@ -5,9 +5,14 @@ import sqlite3
 from flask import g
 import random
 
+# A03:2021 – Injection
 DATABASE = 'database.db'
-UPLOAD_FOLDER = '/app/uploads'
+
+# A04:2021 – Insecure Design
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'exe', 'bat', 'sh', 'md'])
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
