@@ -7,6 +7,7 @@ from flask import (
     session,
     send_from_directory,
 )
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from flask import g
 import os, requests, random, sqlite3
@@ -17,13 +18,29 @@ DATABASE = "database.db"
 
 # A04:2021 – Insecure Design
 ALLOWED_EXTENSIONS = set(
-    ["txt", "pdf", "png", "jpg", "jpeg", "gif", "exe", "bat", "sh", "md"]
+    [
+        "txt",
+        "pdf",
+        "png",
+        "jpg",
+        "jpeg",
+        "gif",
+        "exe",
+        "bat",
+        "sh",
+        "md",
+        "json",
+        "yml",
+        "yaml",
+    ]
 )
 UPLOAD_FOLDER = "uploads"
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 app = Flask(__name__)
+# Misconfigure CORS to allow all domains
+CORS(app)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.secret_key = "your_secret_key"  # Change this to a random secret key
 
@@ -62,6 +79,13 @@ def home():
         return redirect(url_for("login"))
     else:
         return "Welcome to the Vulnerable App!"
+
+
+# Cross-Domain Misconfiguration
+@app.route("/api/data")
+def public_api():
+    return jsonify({"message": "This is public data accessible from any domain"})
+
 
 # A07:2021 – Identification and Authentication Failures
 @app.route("/login", methods=["GET", "POST"])
@@ -172,36 +196,40 @@ def error():
     # Intentionally cause an error
     return 1 / 0  # This will cause a ZeroDivisionError
 
+
 # A08:2021 – Software and Data Integrity Failures
-@app.route('/external-config')
+@app.route("/external-config")
 def external_config():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
 
     # Fetching data from an external source without verifying its integrity
-    response = requests.get('https://universalis.app/api/Famfrit/4745?entriesToReturn=10')
+    response = requests.get(
+        "https://universalis.app/api/Famfrit/4745?entriesToReturn=10"
+    )
     config_data = response.json()
 
-    return render_template('external_config.html', config_data=config_data)
+    return render_template("external_config.html", config_data=config_data)
+
 
 # A10:2021 – Server-Side Request Forgery (SSRF)
-@app.route('/fetch-data', methods=['GET', 'POST'])
+@app.route("/fetch-data", methods=["GET", "POST"])
 def fetch_data():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
 
-    if request.method == 'POST':
-        url = request.form['url']
+    if request.method == "POST":
+        url = request.form["url"]
 
         # Check if the URL starts with http:// or https://, prepend https:// if not
-        if not url.startswith(('http://', 'https://')):
-            url = 'https://' + url
+        if not url.startswith(("http://", "https://")):
+            url = "https://" + url
 
         # Vulnerable to SSRF: Fetching data from a user-provided URL without validation
         response = requests.get(url)
         return response.text
 
-    return render_template('fetch_data.html')
+    return render_template("fetch_data.html")
 
 
 if __name__ == "__main__":
