@@ -28,9 +28,7 @@ jobs:
 
       - name: (3) Extract API documentation from code
         run: |
-          nightvision project set ${PROJECT}
-          # for 0.4.0
-          nightvision swagger extract ./ --lang python -t ${APP} || true
+          nightvision swagger extract ./ --lang python -t ${APP} -p ${PROJECT}|| true
           if [ ! -e openapi-spec.yml ]; then
               cp backup-openapi-spec.yml openapi-spec.yml
           fi
@@ -47,9 +45,8 @@ jobs:
 
       - name: (5) Scan the API
         run: |
-          nightvision project set ${PROJECT}
-          nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} --auth ${NIGHTVISION_AUTH} > scan-results.txt
-          nightvision export sarif -s "$(head -n 1 scan-results.txt)" --swagger-file openapi-spec.yml
+          nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} --auth ${NIGHTVISION_AUTH} -p ${PROJECT} > scan-results.txt
+          nightvision export sarif -s "$(head -n 1 scan-results.txt)" --swagger-file openapi-spec.yml -p ${PROJECT}
 
 
       - name: (5.1) Get logs
