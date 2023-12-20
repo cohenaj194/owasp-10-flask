@@ -79,6 +79,7 @@ def search():
         results = cursor.fetchall()
 
         if len(results) == 0:
+            # XSS RREFLECTION
             return f"no matches found with {search_query}"
 
         return render_template('search_results.html', results=results)
