@@ -14,6 +14,7 @@ click==8.1.7
     # via flask
 deprecated==1.2.14
     # via limits
+# A06:2021 – Vulnerable and Outdated Components (eventually this will work)
 flask==3.0.0
     # via
     #   -r requirements.in

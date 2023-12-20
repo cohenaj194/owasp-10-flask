@@ -7,11 +7,10 @@ from flask import (
     session,
     send_from_directory,
 )
-import os
 from werkzeug.utils import secure_filename
-import sqlite3
 from flask import g
-import random
+import os, requests, random, sqlite3
+
 
 # A03:2021 – Injection
 DATABASE = "database.db"
@@ -64,15 +63,16 @@ def home():
     else:
         return "Welcome to the Vulnerable App!"
 
-
+# A07:2021 – Identification and Authentication Failures
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        # Vulnerable to A07:2021 – Identification and Authentication Failures
         username = request.form["username"]
         password = request.form["password"]
+
+        users = ["admin", "user"]
         # Insecure authentication check
-        if username == "admin" and password == "admin":
+        if username in users and password == "admin":
             session["logged_in"] = True
             return redirect(url_for("home"))
         else:
@@ -172,6 +172,17 @@ def error():
     # Intentionally cause an error
     return 1 / 0  # This will cause a ZeroDivisionError
 
+# A08:2021 – Software and Data Integrity Failures
+@app.route('/external-config')
+def external_config():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    # Fetching data from an external source without verifying its integrity
+    response = requests.get('https://universalis.app/api/Famfrit/4745?entriesToReturn=10')
+    config_data = response.json()
+
+    return render_template('external_config.html', config_data=config_data)
 
 if __name__ == "__main__":
     init_db()
