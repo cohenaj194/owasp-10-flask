@@ -184,6 +184,26 @@ def external_config():
 
     return render_template('external_config.html', config_data=config_data)
 
+# A10:2021 – Server-Side Request Forgery (SSRF)
+@app.route('/fetch-data', methods=['GET', 'POST'])
+def fetch_data():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        url = request.form['url']
+
+        # Check if the URL starts with http:// or https://, prepend https:// if not
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+
+        # Vulnerable to SSRF: Fetching data from a user-provided URL without validation
+        response = requests.get(url)
+        return response.text
+
+    return render_template('fetch_data.html')
+
+
 if __name__ == "__main__":
     init_db()
     app.run(host="0.0.0.0", debug=True)
