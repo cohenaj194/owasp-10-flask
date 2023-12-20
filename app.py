@@ -1,12 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
+import os
+from werkzeug.utils import secure_filename
 import sqlite3
 from flask import g
 import random
 
 DATABASE = 'database.db'
-
+UPLOAD_FOLDER = '/app/uploads'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'exe', 'bat', 'sh', 'md'])
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'your_secret_key'  # Change this to a random secret key
 
 def init_db():
@@ -85,6 +89,40 @@ def search():
         return render_template('search_results.html', results=results)
     
     return render_template('search.html')
+
+
+# A04:2021 – Insecure Design
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# route to upload
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Check if the post request has the file part
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file', filename=filename))
+
+    return render_template('upload.html')
+
+# route to display files
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 
 if __name__ == '__main__':

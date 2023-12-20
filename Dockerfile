@@ -3,6 +3,7 @@ FROM python:3.8-alpine
 
 # copy the requirements file into the image
 COPY ./ /app/
+RUN mkdir -p /app/uploads/
 
 # switch working directory
 WORKDIR /app
