@@ -6,6 +6,7 @@ from flask import (
     url_for,
     session,
     send_from_directory,
+    jsonify,
 )
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
