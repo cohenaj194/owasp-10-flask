@@ -46,8 +46,6 @@ jobs:
       - name: (5) Scan the API
         run: |
           nightvision scan -t ${NIGHTVISION_TARGET} -a ${NIGHTVISION_APP} --auth ${NIGHTVISION_AUTH} -p ${PROJECT} > scan-results.txt
-          nightvision export sarif -s "$(head -n 1 scan-results.txt)" --swagger-file openapi-spec.yml -p ${PROJECT}
-
 
       - name: (5.1) Get logs
         run: for pod in $(docker ps | grep -v 'CONTAINER ID' | grep -v IMAGE | awk '{print $1}'); do docker logs $pod && docker logs $pod >> test.pod.logs 2>&1; done
@@ -58,6 +56,10 @@ jobs:
           name: test.pod.logs
           path: test.pod.logs
           retention-days: 30
+
+      - name: (5.3) Export sarif
+        run: |
+          nightvision export sarif -s "$(head -n 1 scan-results.txt)" --swagger-file openapi-spec.yml
 
       - name: (5.5) Upload sarif documentation artifact
         uses: actions/upload-artifact@v3
